@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Example application</title>
+  </head>
+  <body>
+    <table>
+      {% for user in users %}
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>
+            <a href="/users/{{ user.id }}">{{ user.first_name }}</a>
+          </td>
+        </tr>
+      {% endfor%}
+    </table>
+  </body>
+</html>
