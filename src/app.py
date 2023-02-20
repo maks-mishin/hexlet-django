@@ -13,14 +13,14 @@ def index():
     return render_template('index.html')
 
 
-@app.get('/companies')
+@app.get('/companies/')
 def get_companies():
     page = request.args.get('page', 1, type=int)
     per = request.args.get('per', 5, type=int)
     return jsonify(companies[(page - 1) * per:page * per])
 
 
-@app.route('/users/<int:id>')
+@app.route('/users/<int:id>/')
 def get_user_by_id(id: int):
     user_list = list(filter(lambda user: user['id'] == id, users))
     if not user_list:
@@ -28,12 +28,14 @@ def get_user_by_id(id: int):
     return render_template('users/show.html', user=user_list[0])
 
 
-@app.route('/users')
+@app.route('/users/')
 def get_all_users():
-    return render_template('users/index.html', users=users)
+    term = request.args.get('term')
+    filtered_users = list(filter(lambda user: term in user['first_name'], users))
+    return render_template('users/index.html', users=filtered_users)
 
 
-@app.route('/companies/<int:id>')
+@app.route('/companies/<int:id>/')
 def get_company_by_id(id: int):
     company = list(filter(lambda c: c['id'] == id, companies))
     if company:
@@ -41,6 +43,6 @@ def get_company_by_id(id: int):
     return 'Page not found', 404
 
 
-@app.route('/courses/<id>')
+@app.route('/courses/<id>/')
 def courses(id: int):
     return f'Course id: {id}'
