@@ -1,8 +1,27 @@
 import random
+import sys
+import uuid
 
 from faker import Faker
+from flask import session
 
 SEED = 1234
+
+
+class Repository:
+    def content(self):
+        return session.values()
+
+    def find(self, id):
+        try:
+            return session[id]
+        except KeyError:
+            sys.stderr.write(f'Wrong item id: {id}')
+            raise
+
+    def save(self, item):
+        item['id'] = str(uuid.uuid4())
+        session[item['id']] = item
 
 
 def generate_companies(companies_count):
