@@ -6,18 +6,28 @@
   </head>
   <body>
     <div class="container pt-3">
-      <form action="/users" method="get">
+      <h1>Users</h1>
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-success {{ category }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+      <hr>
+      <form action="{{ url_for('users_get') }}" method="get">
         <div class="mb-3 input-group">
           <input type="search" class="form-control" id="username" name="term" value="{{ search }}">
           <input type="submit" class="btn btn-primary" value="Search">
         </div>
       </form>
+      <hr>
       <table class="table">
         {% for user in users %}
           <tr>
             <td>{{ user.id }}</td>
             <td>
-              <a href="/users/{{ user.id }}">{{ user.first_name }}</a>
+              <a href="#">{{ user.first_name }}</a>
             </td>
           </tr>
         {% endfor%}

@@ -4,7 +4,7 @@
     <title>Example application</title>
   </head>
   <body>
-    <a href="/users">Пользователи</a>
+    <a href="{{ url_for('users_get') }}">Пользователи</a>
     <table>
       <tr>
         <td>{{ user.id }}</td>

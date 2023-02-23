@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, redirect, \
     url_for, flash, get_flashed_messages
 
 from data import Repository
-from validator import validate
+from validator import validate_user
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv(
@@ -12,7 +12,7 @@ app.config['SECRET_KEY'] = os.getenv(
     default='asidfuaybwhra28h3dq2dh'
 )
 
-repo = Repository()
+users_repo = Repository()
 
 
 @app.route('/')
@@ -20,38 +20,52 @@ def index():
     return render_template('index.html')
 
 
-@app.get('/courses')
-def courses_get():
-    courses = repo.content()
+@app.get('/users/')
+def users_get():
+    users = users_repo.content()
+    messages = get_flashed_messages(with_categories=True)
     return render_template(
-        'courses/index.html',
-        courses=courses,
+        'users/index.html',
+        users=users,
+        messages=messages
     )
 
 
-@app.post('/courses')
-def courses_post():
-    course = request.form.to_dict()
-    errors = validate(course)
+@app.post('/users/')
+def users_post():
+    user = request.form.to_dict()
+    errors = validate_user(user)
     if errors:
         return render_template(
-            'courses/new.html',
-            course=course,
+            'users/new.html',
+            user=user,
             errors=errors
         ), 422
-    repo.save(course)
-    return redirect(url_for('courses_get'), code=302)
+    users_repo.save(user)
+    flash('User is created', 'success')
+    return redirect(url_for('users_get'), code=302)
 
 
-@app.route('/courses/new')
-def courses_new():
-    course = {
-        'title', '',
-        'paid', ''
+@app.route('/users/new/')
+def users_new():
+    user_placeholder = {
+        'title': '',
+        'paid': '',
+        'email': ''
     }
     errors = {}
     return render_template(
-        'courses/new.html',
-        course=course,
+        'users/new.html',
+        course=user_placeholder,
         errors=errors
     )
+
+
+@app.get('/users/<int:id>')
+def users_page(id: int):
+    user = users_repo.find(id)
+    return render_template(
+        'users/show.html',
+        user=user
+    )
+

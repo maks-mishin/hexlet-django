@@ -6,11 +6,17 @@
   </head>
   <body>
     <div class="container pt-3">
-      <form action="/users" method="post">
+      <form action="{{ url_for('users_post') }}" method="post">
         <div>
           <label>
-            Nickname
-            <input type="text" required name="nickname">
+            First name
+            <input type="text" required name="first_name">
+          </label>
+        </div>
+        <div>
+          <label>
+            Last name
+            <input type="text" required name="last_name">
           </label>
         </div>
         <div>
