@@ -1,12 +1,16 @@
 import os
 
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, \
+    url_for, flash, get_flashed_messages
 
 from data import Repository
 from validator import validate
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', default='asidfuaybwhra28h3dq2dh')
+app.config['SECRET_KEY'] = os.getenv(
+    'SECRET_KEY',
+    default='asidfuaybwhra28h3dq2dh'
+)
 
 repo = Repository()
 
@@ -36,7 +40,7 @@ def courses_post():
             errors=errors
         ), 422
     repo.save(course)
-    return redirect('/courses', code=302)
+    return redirect(url_for('courses_get'), code=302)
 
 
 @app.route('/courses/new')

@@ -4,7 +4,7 @@
     <title>Example application</title>
   </head>
   <body>
-    <a href="/courses/new">New course</a>
+    <a href="{{ url_for('courses_new') }}">New course</a>
     <ul>
     {% for course in courses %}
     <li>Title: {{ course['title'] }}</li>
