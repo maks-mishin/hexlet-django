@@ -3,7 +3,8 @@ import os
 from flask import Flask, render_template, request, redirect, \
     url_for, flash, get_flashed_messages, make_response
 
-from repository import PostsRepository, Repository
+from repository import PostsRepository, SchoolsRepository, \
+    Repository, UsersRepository
 from validator import validate_user, validate_school, validate_post
 
 app = Flask(__name__)
@@ -21,7 +22,7 @@ def index():
 
 @app.get('/schools')
 def school_list():
-    schools_repo = Repository()
+    schools_repo = SchoolsRepository()
     schools = schools_repo.content()
     messages = get_flashed_messages(with_categories=True)
     return render_template(
@@ -33,7 +34,7 @@ def school_list():
 
 @app.get('/schools/<id>')
 def get_school_by_id(id):
-    repo = Repository()
+    repo = SchoolsRepository()
     school = repo.find(id)
     if not school:
         return 'Page not found', 404
@@ -46,7 +47,7 @@ def get_school_by_id(id):
 
 @app.post('/schools')
 def school_create():
-    repo = Repository()
+    repo = SchoolsRepository()
     data = request.form.to_dict()
     errors = validate_school(data)
     if errors:
@@ -62,7 +63,7 @@ def school_create():
 
 @app.route('/schools/<id>/edit')
 def school_edit(id):
-    repo = Repository()
+    repo = SchoolsRepository()
     school = repo.find(id)
     errors = []
 
@@ -75,7 +76,7 @@ def school_edit(id):
 
 @app.post('/schools/<id>/patch')
 def school_patch(id):
-    repo = Repository()
+    repo = SchoolsRepository()
     school = repo.find(id)
     data = request.form.to_dict()
     errors = validate_school(data)
@@ -93,9 +94,17 @@ def school_patch(id):
     return redirect(url_for('school_list'))
 
 
+@app.route('/schools/<id>/delete', methods=['POST'])
+def delete_school(id):
+    repo = SchoolsRepository()
+    repo.destroy(id)
+    flash('School has been deleted', 'success')
+    return redirect(url_for('school_list')), 302
+
+
 @app.get('/users/')
 def user_list():
-    repo = Repository()
+    repo = UsersRepository()
     users = repo.content()
     messages = get_flashed_messages(with_categories=True)
     return render_template(
@@ -107,7 +116,7 @@ def user_list():
 
 @app.post('/users/')
 def user_create():
-    repo = Repository()
+    repo = UsersRepository()
     user = request.form.to_dict()
     errors = validate_user(user)
     if errors:
@@ -131,14 +140,14 @@ def users_new():
     errors = {}
     return render_template(
         'users/new.html',
-        course=user_placeholder,
+        user=user_placeholder,
         errors=errors
     )
 
 
 @app.get('/users/<id>')
 def user_detail(id):
-    repo = Repository()
+    repo = UsersRepository()
     user = repo.find(id)
     return render_template(
         'users/show.html',
@@ -148,7 +157,7 @@ def user_detail(id):
 
 @app.route('/users/<id>/edit')
 def user_edit(id):
-    repo = Repository()
+    repo = UsersRepository()
     user = repo.find(id)
     errors = []
 
@@ -161,7 +170,7 @@ def user_edit(id):
 
 @app.post('/users/<id>/patch')
 def user_patch(id):
-    repo = Repository()
+    repo = UsersRepository()
     user = repo.find(id)
     data = request.form.to_dict()
     errors = validate_user(data)
@@ -179,6 +188,14 @@ def user_patch(id):
     repo.save(user)
     flash('User has been updated', 'success')
     return redirect(url_for('user_list'))
+
+
+@app.post('/users/<id>/delete')
+def user_delete(id):
+    repo = UsersRepository()
+    repo.destroy(id)
+    flash('User has been deleted', 'success')
+    return redirect(url_for('user_list')), 302
 
 
 @app.route('/posts')
@@ -273,11 +290,17 @@ def post_update(id):
 
     post['title'] = data['title']
     post['body'] = data['body']
-    id = repo.save(post)
+    repo.save(post)
     flash('Post has been updated', 'success')
-    resp = make_response(redirect(url_for('post_list')))
-    resp.headers['X-ID'] = id
-    return resp
+    return redirect(url_for('post_list'))
+
+
+@app.post('/posts/<id>/delete')
+def post_delete(id):
+    repo = PostsRepository()
+    repo.destroy(id)
+    flash('Post has been deleted', 'success')
+    return redirect(url_for('post_list')), 302
 
 
 @app.get('/courses')

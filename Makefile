@@ -8,4 +8,4 @@ start:
 	#poetry run flask run -h 0.0.0.0 -p 8080
 
 test:
-	poetry run pytest -vv tests/test_posts.py
+	poetry run pytest -vv tests/test_post_delete.py

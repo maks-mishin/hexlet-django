@@ -11,11 +11,15 @@
       </div>
     {% endfor %}
   {% endif %}
+
   <h2>Page: {{ page }}</h2>
   <ul>
     {% for post in posts %}
       <li>
         <a href="{{ url_for('post_detail', id=post.id) }}">{{ post.title }}</a>
+        <form action="{{ url_for('post_delete', id=post.id) }}" method="post">
+          <input type="submit" class="btn btn-danger" value="Remove">
+        </form>
       </li>
     {% endfor %}
   </ul>

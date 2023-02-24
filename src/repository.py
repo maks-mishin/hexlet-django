@@ -49,3 +49,59 @@ class PostsRepository():
         session['posts'][post['id']] = post
         session['posts'] = session['posts']
         return post['id']
+
+
+class SchoolsRepository():
+    def __init__(self):
+        if 'schools' not in session:
+            session['schools'] = {}
+
+    def content(self):
+        return session['schools'].values()
+
+    def find(self, id):
+        try:
+            return session['schools'][id]
+        except KeyError:
+            sys.stderr.write(f'Wrong school id: {id}')
+            raise
+
+    def destroy(self, id):
+        del session['schools'][id]
+
+    def save(self, school):
+        if not (school.get('name')):
+            raise Exception(f'Wrong data: {json.loads(school)}')
+        if not school.get('id'):
+            school['id'] = str(uuid.uuid4())
+        session['schools'][school['id']] = school
+        session['schools'] = session['schools']
+        return school['id']
+
+
+class UsersRepository():
+    def __init__(self):
+        if 'users' not in session:
+            session['users'] = {}
+
+    def content(self):
+        return session['users'].values()
+
+    def find(self, id):
+        try:
+            return session['users'][id]
+        except KeyError:
+            sys.stderr.write(f'Wrong user id: {id}')
+            raise
+
+    def destroy(self, id):
+        del session['users'][id]
+
+    def save(self, user):
+        if not (user.get('first_name') and user.get('last_name') and user.get('email')):
+            raise Exception(f'Wrong data: {json.loads(user)}')
+        if not user.get('id'):
+            user['id'] = str(uuid.uuid4())
+        session['users'][user['id']] = user
+        session['users'] = session['users']
+        return user['id']
