@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, render_template, request, redirect, \
-    url_for, flash, get_flashed_messages
+    url_for, flash, get_flashed_messages, make_response
 
 from repository import PostsRepository, Repository
 from validator import validate_user, validate_school, validate_post
@@ -13,10 +13,6 @@ app.config['SECRET_KEY'] = os.getenv(
 )
 app.debug = True
 
-posts_repo = Repository()
-users_repo = Repository()
-schools_repo = Repository()
-
 
 @app.route('/')
 def index():
@@ -25,6 +21,7 @@ def index():
 
 @app.get('/schools')
 def school_list():
+    schools_repo = Repository()
     schools = schools_repo.content()
     messages = get_flashed_messages(with_categories=True)
     return render_template(
@@ -36,7 +33,8 @@ def school_list():
 
 @app.get('/schools/<id>')
 def get_school_by_id(id):
-    school = schools_repo.find(id)
+    repo = Repository()
+    school = repo.find(id)
     if not school:
         return 'Page not found', 404
 
@@ -48,6 +46,7 @@ def get_school_by_id(id):
 
 @app.post('/schools')
 def school_create():
+    repo = Repository()
     data = request.form.to_dict()
     errors = validate_school(data)
     if errors:
@@ -56,14 +55,48 @@ def school_create():
             school=data,
             errors=errors
         ), 422
-    schools_repo.save(data)
+    repo.save(data)
     flash('School has been created!', 'success')
+    return redirect(url_for('school_list'))
+
+
+@app.route('/schools/<id>/edit')
+def school_edit(id):
+    repo = Repository()
+    school = repo.find(id)
+    errors = []
+
+    return render_template(
+        'schools/edit.html',
+        school=school,
+        errors=errors
+    )
+
+
+@app.post('/schools/<id>/patch')
+def school_patch(id):
+    repo = Repository()
+    school = repo.find(id)
+    data = request.form.to_dict()
+    errors = validate_school(data)
+
+    if errors:
+        return render_template(
+            'schools/edit.html',
+            school=school,
+            errors=errors
+        ), 422
+
+    school['name'] = data['name']
+    repo.save(school)
+    flash('School has been updated', 'success')
     return redirect(url_for('school_list'))
 
 
 @app.get('/users/')
 def user_list():
-    users = users_repo.content()
+    repo = Repository()
+    users = repo.content()
     messages = get_flashed_messages(with_categories=True)
     return render_template(
         'users/index.html',
@@ -73,7 +106,8 @@ def user_list():
 
 
 @app.post('/users/')
-def users_post():
+def user_create():
+    repo = Repository()
     user = request.form.to_dict()
     errors = validate_user(user)
     if errors:
@@ -82,7 +116,7 @@ def users_post():
             user=user,
             errors=errors
         ), 422
-    users_repo.save(user)
+    repo.save(user)
     flash('User is created', 'success')
     return redirect(url_for('user_list'), code=302)
 
@@ -104,17 +138,54 @@ def users_new():
 
 @app.get('/users/<id>')
 def user_detail(id):
-    user = users_repo.find(id)
+    repo = Repository()
+    user = repo.find(id)
     return render_template(
         'users/show.html',
         user=user
     )
 
 
+@app.route('/users/<id>/edit')
+def user_edit(id):
+    repo = Repository()
+    user = repo.find(id)
+    errors = []
+
+    return render_template(
+        'users/edit.html',
+        user=user,
+        errors=errors
+    )
+
+
+@app.post('/users/<id>/patch')
+def user_patch(id):
+    repo = Repository()
+    user = repo.find(id)
+    data = request.form.to_dict()
+    errors = validate_user(data)
+
+    if errors:
+        return render_template(
+            'users/edit.html',
+            user=user,
+            errors=errors
+        ), 422
+
+    user['first_name'] = data['first_name']
+    user['last_name'] = data['last_name']
+    user['email'] = data['email']
+    repo.save(user)
+    flash('User has been updated', 'success')
+    return redirect(url_for('user_list'))
+
+
 @app.route('/posts')
 def post_list():
+    repo = PostsRepository()
     # page_posts = 5
-    posts = list(posts_repo.content())
+    posts = list(repo.content())
     page = request.args.get('page', default=1, type=int)
     messages = get_flashed_messages(with_categories=True)
 
@@ -131,7 +202,8 @@ def post_list():
 
 @app.get('/posts/<id>')
 def post_detail(id):
-    post = posts_repo.find(id)
+    repo = PostsRepository()
+    post = repo.find(id)
     if not post:
         return 'Page not found', 404
     return render_template(
@@ -142,6 +214,7 @@ def post_detail(id):
 
 @app.post('/posts')
 def post_create():
+    repo = PostsRepository()
     post = request.form.to_dict()
     errors = validate_post(post)
     if errors:
@@ -150,9 +223,11 @@ def post_create():
             post=post,
             errors=errors
         ), 422
-    posts_repo.save(post)
+    id = repo.save(post)
     flash('Post has been created', 'success')
-    return redirect(url_for('post_list'), code=302)
+    resp = make_response(redirect(url_for('post_list')))
+    resp.headers['X-ID'] = id
+    return resp
 
 
 @app.get('/posts/new')
@@ -167,6 +242,42 @@ def post_new():
         post=post_placeholder,
         errors=errors
     )
+
+
+@app.get('/posts/<id>/update')
+def post_edit(id):
+    repo = PostsRepository()
+    post = repo.find(id)
+    errors = []
+
+    return render_template(
+        'posts/edit.html',
+        post=post,
+        errors=errors
+    )
+
+
+@app.post('/posts/<id>/update')
+def post_update(id):
+    repo = PostsRepository()
+    post = repo.find(id)
+    data = request.form.to_dict()
+    errors = validate_post(data)
+
+    if errors:
+        return render_template(
+            'posts/edit.html',
+            post=post,
+            errors=errors
+        ), 422
+
+    post['title'] = data['title']
+    post['body'] = data['body']
+    id = repo.save(post)
+    flash('Post has been updated', 'success')
+    resp = make_response(redirect(url_for('post_list')))
+    resp.headers['X-ID'] = id
+    return resp
 
 
 @app.get('/courses')

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}User edit page{% endblock %}
+
+{% block content %}
+  <form action="{{ url_for('user_patch', id=user.id) }}" method="post">
+    <div>
+      <label>
+        Имя *
+        <input type="text" name="first_name" value="{{ user.first_name }}">
+      </label>
+      {% if errors %}
+        <div>{{ errors.first_name }}</div>
+      {% endif %}
+    </div>
+    <div>
+      <label>
+        Фамилия *
+        <input type="text" name="last_name" value="{{ user.last_name }}">
+      </label>
+      {% if errors %}
+        <div>{{ errors.last_name }}</div>
+      {% endif %}
+    </div>
+    <div>
+      <label>
+        E-mail *
+        <input type="email" name="email" value="{{ user.email }}">
+      </label>
+      {% if errors %}
+        <div>{{ errors.email }}</div>
+      {% endif %}
+    </div>
+    <input type="submit" value="Update">
+  </form>
+{% endblock %}

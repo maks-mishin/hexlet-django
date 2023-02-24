@@ -48,3 +48,4 @@ class PostsRepository():
             post['id'] = str(uuid.uuid4())
         session['posts'][post['id']] = post
         session['posts'] = session['posts']
+        return post['id']
