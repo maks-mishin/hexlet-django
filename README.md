@@ -27,8 +27,8 @@
   - [x] CRUD: Создание
   - [x] CRUD: Обновление
   - [x] CRUD: Удаление
-  - [ ] Model-View-Controller (MVC)
-  - [ ] Cookies
+  - [x] Model-View-Controller (MVC)
+  - [x] Cookies
   - [ ] Сессия
   - [ ] Деплой
 - [ ] Python: разработка на фреймворке Django

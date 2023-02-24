@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}User's cart page{% endblock %}
+
+{% block content %}
+  <form action="/cart-items" method="POST">
+    <input type="hidden" name="item_id" value="1">
+    <input type="hidden" name="item_name" value="One">
+    One
+    <input type="submit" value="Add">
+  </form>
+  <br>
+ <form action="/cart-items" method="POST">
+    <input type="hidden" name="item_id" value="2">
+    <input type="hidden" name="item_name" value="Two">
+    Two
+    <input type="submit" value="Add">
+  </form>
+  <br>
+
+  <form action="/cart-items/clean" method="POST">
+    <input type="submit" value="Clean">
+  </form>
+  <br>
+
+  {% if cart | length == 0 %}
+    <div>Cart is empty</div>
+  {% else %}
+    {% for key, value in cart.items() %}
+      <div>
+        {{ key }}: {{ value }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endblock %}

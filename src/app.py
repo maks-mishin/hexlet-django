@@ -1,4 +1,6 @@
+import json
 import os
+from typing import List, Dict
 
 from flask import Flask, render_template, request, redirect, \
     url_for, flash, get_flashed_messages, make_response
@@ -15,9 +17,39 @@ app.config['SECRET_KEY'] = os.getenv(
 app.debug = True
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
+
+
+@app.route('/cart', methods=['GET'])
+def cart_index():
+    cart = json.loads(
+        request.cookies.get('cart', default=json.dumps({}))
+    )
+    return render_template('cart.html', cart=cart)
+
+
+@app.route('/cart-items', methods=['POST'])
+def cart_items():
+    item_data = request.form.to_dict()
+    cart = json.loads(request.cookies.get('cart', json.dumps({})))
+
+    cart.setdefault(item_data['item_name'], 0)
+    cart[item_data['item_name']] += 1
+    print('cart', cart)
+
+    encoded_cart = json.dumps(cart)
+    response = make_response(redirect(url_for('cart_index')))
+    response.set_cookie('cart', encoded_cart)
+    return response
+
+
+@app.route('/cart-items/clean', methods=['POST'])
+def cart_clean():
+    response = redirect('/')
+    response.delete_cookie('cart')
+    return response
 
 
 @app.get('/schools')
