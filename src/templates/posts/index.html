@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}List of posts{% endblock %}
+
+{% block content %}
+  <h1>Posts</h1>
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-success {{ category }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+  <h2>Page: {{ page }}</h2>
+  <ul>
+    {% for post in posts %}
+      <li>
+        <a href="{{ url_for('post_detail', id=post.id) }}">{{ post.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item"><a class="page-link" href="/posts?page={{ page - 1 }}">Previous</a></li>
+      <li class="page-item"><a class="page-link" href="/posts?page={{ page + 1 }}">Next</a></li>
+    </ul>
+  </nav>
+{% endblock %}

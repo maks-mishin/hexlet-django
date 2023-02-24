@@ -1,17 +1,15 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Example application</title>
-  </head>
-  <body>
-    <a href="{{ url_for('users_get') }}">Пользователи</a>
-    <table>
-      <tr>
-        <td>{{ user.id }}</td>
-        <td>{{ user.first_name }}</td>
-        <td>{{ user.last_name }}</td>
-        <td>{{ user.email }}</td>
-      </tr>
-    </table>
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}User detail page{% endblock %}
+
+{% block content %}
+  <a href="{{ url_for('user_list') }}">Пользователи</a>
+  <table>
+    <tr>
+      <td>{{ user.id }}</td>
+      <td>{{ user.first_name }}</td>
+      <td>{{ user.last_name }}</td>
+      <td>{{ user.email }}</td>
+    </tr>
+  </table>
+{% endblock %}

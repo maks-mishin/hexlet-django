@@ -1,27 +1,8 @@
 import random
-import sys
-import uuid
 
 from faker import Faker
-from flask import session
 
 SEED = 1234
-
-
-class Repository:
-    def content(self):
-        return session.values()
-
-    def find(self, id):
-        try:
-            return session[id]
-        except KeyError:
-            sys.stderr.write(f'Wrong item id: {id}')
-            raise
-
-    def save(self, item):
-        item['id'] = str(uuid.uuid4())
-        session[item['id']] = item
 
 
 def generate_companies(companies_count):
@@ -60,3 +41,18 @@ def generate_users(users_count):
         })
 
     return users
+
+
+def generate_posts(size):
+    fake = Faker()
+    fake.seed_instance(SEED)
+
+    posts = []
+    for _ in range(size):
+        posts.append({
+            'id': fake.uuid4(),
+            'title': fake.sentence(),
+            'body': fake.text(),
+            'slug': fake.slug(),
+        })
+    return posts

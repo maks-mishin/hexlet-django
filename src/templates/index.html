@@ -1,9 +1,19 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Example application</title>
-  </head>
-  <body>
-    <a href="/users">Users</a>
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Main page{% endblock %}
+
+{% block content %}
+  <h1>This is a main page of app</h1>
+  <p>
+    <a href="{{ url_for('user_list') }}">Users</a>
+  </p>
+  <p>
+    <a href="{{ url_for('post_list') }}">Posts</a>
+  </p>
+  <p>
+    <a href="{{ url_for('course_list') }}">Courses</a>
+  </p>
+  <p>
+    <a href="{{ url_for('school_list') }}">Schools</a>
+  </p>
+{% endblock %}

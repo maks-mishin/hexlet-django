@@ -1,4 +1,6 @@
-<!doctype html>
+<!doctype html>{% if errors['title'] %}
+            <div>{{ errors['title'] }}</div>
+          {% endif %}
 <html>
   <head>
     <title>Example application</title>

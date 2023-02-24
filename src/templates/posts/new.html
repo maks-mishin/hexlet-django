@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}User detail page{% endblock %}
+
+{% block content %}
+  <a href="{{ url_for('post_list') }}">Посты</a>
+  <form action="{{ url_for('post_create') }}" method="post">
+    <div>
+      <label>
+        Title
+        <input type="text" required name="title" value="{{ post.title }}">
+      </label>
+      {% if errors['title'] %}
+        <div>{{ errors['title'] }}</div>
+      {% endif %}
+    </div>
+    <div>
+      <label>
+        Body
+        <input type="text" required name="body" value="{{ post.body }}">
+      </label>
+      {% if errors['body'] %}
+        <div>{{ errors['body'] }}</div>
+      {% endif %}
+    </div>
+    <input type="submit" class="btn btn-primary" value="Sign Up">
+  </form>
+{% endblock %}

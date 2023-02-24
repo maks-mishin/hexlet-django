@@ -2,7 +2,7 @@ from urllib.parse import urljoin
 
 import requests
 
-BASE_URL = 'http://localhost:5000'
+BASE_URL = 'http://localhost:8080'
 
 
 def test_has_form():
